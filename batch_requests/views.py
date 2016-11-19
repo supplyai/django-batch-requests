@@ -70,10 +70,14 @@ def get_wsgi_requests(request):
     if no_requests > _settings.MAX_LIMIT:
         raise BadBatchRequest("You can batch maximum of %d requests." % (_settings.MAX_LIMIT))
 
+    if 'HTTP_AUTHORIZATION' in request.META:
+        authentication_header = { 'Authentication' : request.META['HTTP_AUTHORIZATION']}
+
+
     # We could mutate the current request with the respective parameters, but mutation is ghost in the dark,
     # so lets avoid. Construct the new WSGI request object for each request.
 
-    def construct_wsgi_from_data(data):
+    def construct_wsgi_from_data(data,authentication_header=''):
         '''
             Given the data in the format of url, method, body and headers, construct a new
             WSGIRequest object.
@@ -88,10 +92,10 @@ def get_wsgi_requests(request):
             raise BadBatchRequest("Invalid request method.")
 
         body = data.get("body", "")
-        headers = data.get("headers", {})
-        return get_wsgi_request_object(request, method, url, headers, body)
+        #headers = data.get("headers", {})
+        return get_wsgi_request_object(request, method, url, authentication_header, body)
 
-    return [construct_wsgi_from_data(data) for data in requests]
+    return [construct_wsgi_from_data(data,authentication_header) for data in requests]
 
 
 def execute_requests(wsgi_requests):
