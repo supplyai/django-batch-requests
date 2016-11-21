@@ -71,7 +71,7 @@ def get_wsgi_requests(request):
         raise BadBatchRequest("You can batch maximum of %d requests." % (_settings.MAX_LIMIT))
 
     if 'HTTP_AUTHORIZATION' in request.META:
-        authentication_header = { 'Authentication' : request.META['HTTP_AUTHORIZATION']}
+        authentication_header = { 'Authorization' : request.META['HTTP_AUTHORIZATION']}
 
 
     # We could mutate the current request with the respective parameters, but mutation is ghost in the dark,
