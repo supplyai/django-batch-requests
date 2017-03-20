@@ -8,6 +8,8 @@ from django.conf import settings
 from importlib import import_module
 import multiprocessing
 
+from raven import Client
+
 DEFAULTS = {
     "HEADERS_TO_INCLUDE": ["HTTP_USER_AGENT", "HTTP_COOKIE"],
     "DEFAULT_CONTENT_TYPE": "application/json",
@@ -23,6 +25,9 @@ DEFAULTS = {
 
 USER_DEFINED_SETTINGS = getattr(settings, 'BATCH_REQUESTS', {})
 
+RAVEN_CONFIG = getattr(settings,'RAVEN_CONFIG',{})
+
+client = Client(RAVEN_CONFIG['dsn'])
 
 def import_class(class_path):
     '''

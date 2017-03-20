@@ -9,3 +9,4 @@ pytest-django==2.8.0
 coveralls==0.5
 pytest-cov==1.8.1
 futures==3.0.5
+raven==5.31.0

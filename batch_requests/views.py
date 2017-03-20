@@ -14,7 +14,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
 from batch_requests.exceptions import BadBatchRequest
-from batch_requests.settings import br_settings as _settings
+from batch_requests.settings import br_settings as _settings, client
 from batch_requests.utils import get_wsgi_request_object
 from datetime import datetime
 
@@ -33,8 +33,9 @@ def get_response(wsgi_request):
     # Let the view do his task.
     try:
         resp = view(*args, **kwargs)
-    except Exception as exc:
-        resp = HttpResponseServerError(content=exc.message)
+    except:
+        client.captureException()
+        resp = HttpResponseServerError()
 
     headers = dict(resp._headers.values())
     # Convert HTTP response into simple dict type.
