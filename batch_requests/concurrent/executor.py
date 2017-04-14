@@ -12,14 +12,17 @@ class Executor(object):
     '''
         Based executor class to encapsulate the job execution.
     '''
+    number_worker = None
     __metaclass__ = ABCMeta
 
     def execute(self, requests, resp_generator, *args, **kwargs):
         '''
             Calls the resp_generator for all the requests in parallel in an asynchronous way.
         '''
+        self.__init__(self.number_worker)
         result_futures = [self.executor_pool.submit(resp_generator, req, *args, **kwargs) for req in requests]
         resp = [res_future.result() for res_future in result_futures]
+        self.executor_pool.shutdown()
         return resp
 
 
@@ -43,6 +46,7 @@ class ThreadBasedExecutor(Executor):
         '''
             Create a thread pool for concurrent execution with specified number of workers.
         '''
+        self.number_worker = num_workers
         self.executor_pool = ThreadPoolExecutor(num_workers)
 
 
@@ -54,4 +58,5 @@ class ProcessBasedExecutor(Executor):
         '''
             Create a process pool for concurrent execution with specified number of workers.
         '''
+        self.number_worker = num_workers
         self.executor_pool = ProcessPoolExecutor(num_workers)
